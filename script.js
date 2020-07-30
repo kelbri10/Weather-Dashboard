@@ -1,24 +1,43 @@
-//append the city to the left side of the page as a previous search
+
 
 //when user clicks the search button, append city to list group 
 $('.searchButton').on('click', function(){
-    let location = $('.search-city').val()
+    let location = $('.search-city').val(); 
+
+    getCurrentWeather(location);
+    appendWeather(location); 
+
+    localStorage.setItem('city', location); 
+})
+
+//append the city to the left side of the page as a previous search
+const appendWeather = location => { 
+
+    //create new list item for city
+    let li = document.createElement('BUTTON'); 
+
+    li.setAttribute('class', 'list-group-item past-city'); 
+
+    li.innerHTML = location; 
+
+    //when user clicks the city, they will revisit previous search history
+    li.addEventListener('click', function(){
+        getCurrentWeather(location); 
+    })
+
+    //adds most recently searched location above older searches
+    $('.city-list').prepend(li); 
+
+} 
+
+
+//when user searches for city, ajax calls for current and future conditions of the city
+const getCurrentWeather = location => {
 
     let currentDate = moment().format('L'); 
 
     $('#city-name').text(`${location} ${currentDate}`); 
 
-    getCurrentWeather(location);
-    appendWeather(location); 
-})
-
-//append the city to the left side of the page as a previous search
-const appendWeather = location => { 
-    location.setAttribute('class', 'list-group-item'); 
-}
-
- //when user searches for city, ajax calls for current and future conditions of the city
-const getCurrentWeather = location => {
     //set apiKey 
     const apiKey = 'eb064f8519bae71185dae0cf9c297178'
 
@@ -31,6 +50,10 @@ const getCurrentWeather = location => {
         method: "GET"
     }).then(function(response) {
         console.log(response);  
+
+        let cityID = response.id; 
+        getWeekForecast(location); 
+
         //sets text in card body to display temp, humidity, and wind speed
         $('#temperature').text(`Temperature: ${response.main.temp} F`); 
         $('#humidity').text(`Humidity: ${response.main.humidity} %`); 
@@ -44,7 +67,20 @@ const getCurrentWeather = location => {
 //uv inex displays if weather is favorable, m,oderate or sever
 
 //five day forecast displays the date, icon of weather condition
-
-//when user clicks on city in search history the history is redisplayed 
+const getWeekForecast = location => { 
+    console.log(location); 
+}
 
 //when open weather dashboard, last searched city forecast is displayed
+const reloadForecast = () => { 
+    let lastCity = localStorage.getItem('city'); 
+
+    if (lastCity === null){
+        return; 
+    } else { 
+        getCurrentWeather(lastCity); 
+        appendWeather(lastCity); 
+    }
+}
+
+reloadForecast(); 
