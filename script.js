@@ -4,8 +4,7 @@
 $('.searchButton').on('click', function(){
     let location = $('.search-city').val(); 
 
-    getCurrentWeather(location);
-    getWeekForecast(location); 
+    getCurrentWeather(location); 
     appendWeather(location); 
 
     localStorage.setItem('city', location); 
@@ -50,7 +49,13 @@ const getCurrentWeather = location => {
         url: queryURL,
         method: "GET"
     }).then(function(response) { 
-        let cityID = response.id; 
+
+        console.log(response); 
+
+        let lat = response.coord.lat; 
+        let lon = response.coord.lon; 
+
+        getWeekForecast(lat, lon); 
 
         //sets text in card body to display temp, humidity, and wind speed
         $('#temperature').text(`Temperature: ${response.main.temp} F`); 
@@ -65,13 +70,13 @@ const getCurrentWeather = location => {
 //uv inex displays if weather is favorable, m,oderate or sever
 
 //five day forecast displays the date, icon of weather condition
-const getWeekForecast = location => { 
+const getWeekForecast = (lat, lon) => { 
     console.log(location); 
     //set apiKey 
     const apiKey = 'eb064f8519bae71185dae0cf9c297178'
 
-    //create url with location and apiKey
-    const queryURL = `https://api.openweathermap.org/data/2.5/forecast?q=${location}&units=imperial&appid=${apiKey}`;
+    //create url with location and apiKey using onecall API 
+    const queryURL = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=hourly,minutely&units=imperial&appid=${apiKey}&cnt=5`;
 
     //ajax call
     $.ajax({
@@ -79,29 +84,29 @@ const getWeekForecast = location => {
         method: "GET"
     }).then(function(response) {
 
-        console.log(response);
-        for(let i = 0; i < 5; i++){
-            
+        console.log(response)
+
+        for (let i = 0; i < response.daily.length; i++){ 
             let weatherCard = document.createElement('div')
             weatherCard.setAttribute('class', 'col-md-2 weather-card card text-white bg-primary mb-3'); 
 
             let forecastBody = document.createElement('div')
             forecastBody.setAttribute('class', 'card-body'); 
-
+            
             let temperature = document.createElement('p'); 
             temperature.setAttribute('class', 'card-text forecast-temp'); 
-            $('.forecast-temp').text(`Temp: ${response.list[i].main.temp} F`)
-        
+            temperature.innerText = `Temp: ${response.daily[i].temp.day}`; 
 
             let humidity = document.createElement('p'); 
             humidity.setAttribute('class', 'card-text forecast-humid'); 
-            $('.forecast-humid').text(`Humidity: ${response.list[i].main.humidity} %`)
+            humidity.innerText = `Humidity: ${response.daily[i].humidity} %`; 
 
             forecastBody.append(temperature, humidity); 
-            weatherCard.append   (forecastBody); 
+            weatherCard.append(forecastBody); 
 
-            $('.forecast-row').html(weatherCard); 
-        } 
+            $('.forecast-row').append(weatherCard); 
+        
+        }
        
     }); 
 }
@@ -115,8 +120,6 @@ const reloadForecast = () => {
     } else { 
         getCurrentWeather(lastCity); 
         appendWeather(lastCity); 
-        getWeekForecast(lastCity); 
     }
 }
-
 reloadForecast(); 
