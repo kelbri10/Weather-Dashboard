@@ -8,4 +8,5 @@ Developers are often tasked with retrieving data from another application's API 
 ## To Do 
 * Add dates for each weather forecast in MM/DD/YYYY format 
 * Limit forecast to 7 days instead of 8 days 
-    ** Experiment with formatting for improved UX
+    * Experiment with formatting for improved UX with additional CSS formatting 
+* Allow user to click enter to submit city 
