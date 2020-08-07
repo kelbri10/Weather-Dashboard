@@ -14,4 +14,3 @@ Developers are often tasked with retrieving data from another application's API 
 ## The Current Design 
 
 ![GitHub Logo](/weather.png)
-Format: ![image of weather design](url)
