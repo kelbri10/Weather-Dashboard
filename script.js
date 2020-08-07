@@ -54,7 +54,7 @@ const getCurrentWeather = location => {
         getWeekForecast(lat, lon); 
 
         //sets text in card body to display temp, humidity, and wind speed for main card
-        $('#temperature').text(`Temperature: ${response.main.temp} F`); 
+        $('#temperature').text(`Temperature: ${Math.floor(response.main.temp)} F`); 
         $('#humidity').text(`Humidity: ${response.main.humidity} %`); 
         $('#wind').text(`Wind Speed: ${response.wind.speed} MPH`); 
     }); 
@@ -84,11 +84,11 @@ const getWeekForecast = (lat, lon, location) => {
 
         let forecasts = response.daily; 
 
-        forecasts.forEach(forecast => { 
-            console.log(forecast.temp.day); 
-            console.log(forecast.humidity); 
-            console.log(forecast.weather[0].icon); 
-            
+        //clears forecast row 
+        $('.forecast-row').empty(); 
+
+       forecasts.forEach(forecast => { 
+        
             let card = document.createElement('div'); 
             card.setAttribute('class', 'card text-white bg-dark mb-3');
             
@@ -105,7 +105,7 @@ const getWeekForecast = (lat, lon, location) => {
 
             let temperature = document.createElement('h5'); 
             temperature.setAttribute('class', 'card-title'); 
-            temperature.textContent = `Temp: ${forecast.temp.day} F`; 
+            temperature.textContent = `Temp: ${Math.floor(forecast.temp.day)} F`; 
 
             let humidity = document.createElement('h5'); 
             humidity.setAttribute('class', 'card-title')
@@ -115,7 +115,7 @@ const getWeekForecast = (lat, lon, location) => {
 
             card.append(header, cardBody); 
 
-            $('.forecast-col').append(card); 
+            $('.forecast-row').append(card); 
         }); 
        
     }); 
