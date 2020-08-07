@@ -1,8 +1,6 @@
-
-
 //when user clicks the search button, append city to list group 
 $('.searchButton').on('click', function(){
-    let location = $('.search-city').val(); 
+    let location = $('.search-city').val();
 
     getCurrentWeather(location); 
     appendWeather(location); 
@@ -48,16 +46,14 @@ const getCurrentWeather = location => {
     $.ajax({
         url: queryURL,
         method: "GET"
-    }).then(function(response) { 
-
-        console.log(response); 
+    }).then(function(response) {
 
         let lat = response.coord.lat; 
         let lon = response.coord.lon; 
 
         getWeekForecast(lat, lon); 
 
-        //sets text in card body to display temp, humidity, and wind speed
+        //sets text in card body to display temp, humidity, and wind speed for main card
         $('#temperature').text(`Temperature: ${response.main.temp} F`); 
         $('#humidity').text(`Humidity: ${response.main.humidity} %`); 
         $('#wind').text(`Wind Speed: ${response.wind.speed} MPH`); 
@@ -70,7 +66,7 @@ const getCurrentWeather = location => {
 //uv inex displays if weather is favorable, m,oderate or sever
 
 //five day forecast displays the date, icon of weather condition
-const getWeekForecast = (lat, lon) => { 
+const getWeekForecast = (lat, lon, location) => { 
     console.log(location); 
     //set apiKey 
     const apiKey = 'eb064f8519bae71185dae0cf9c297178'
@@ -84,29 +80,43 @@ const getWeekForecast = (lat, lon) => {
         method: "GET"
     }).then(function(response) {
 
-        console.log(response)
+        console.log(response); 
 
-        for (let i = 0; i < response.daily.length; i++){ 
-            let weatherCard = document.createElement('div')
-            weatherCard.setAttribute('class', 'col-md-2 weather-card card text-white bg-primary mb-3'); 
+        let forecasts = response.daily; 
 
-            let forecastBody = document.createElement('div')
-            forecastBody.setAttribute('class', 'card-body'); 
+        forecasts.forEach(forecast => { 
+            console.log(forecast.temp.day); 
+            console.log(forecast.humidity); 
+            console.log(forecast.weather[0].icon); 
             
-            let temperature = document.createElement('p'); 
-            temperature.setAttribute('class', 'card-text forecast-temp'); 
-            temperature.innerText = `Temp: ${response.daily[i].temp.day}`; 
+            let card = document.createElement('div'); 
+            card.setAttribute('class', 'card text-white bg-dark mb-3');
+            
+            let header = document.createElement('h5'); 
+            header.setAttribute('class', 'card-header'); 
+            header.textContent = forecast.weather[0].main; 
+            let icon = document.createElement('img'); 
+            icon.setAttribute('src', `http://openweathermap.org/img/wn/${forecast.weather[0].icon}@2x.png`)
 
-            let humidity = document.createElement('p'); 
-            humidity.setAttribute('class', 'card-text forecast-humid'); 
-            humidity.innerText = `Humidity: ${response.daily[i].humidity} %`; 
+            header.append(icon); 
+            
+            let cardBody = document.createElement('div'); 
+            cardBody.setAttribute('class', 'card-body'); 
 
-            forecastBody.append(temperature, humidity); 
-            weatherCard.append(forecastBody); 
+            let temperature = document.createElement('h5'); 
+            temperature.setAttribute('class', 'card-title'); 
+            temperature.textContent = `Temp: ${forecast.temp.day} F`; 
 
-            $('.forecast-row').append(weatherCard); 
-        
-        }
+            let humidity = document.createElement('h5'); 
+            humidity.setAttribute('class', 'card-title')
+            humidity.textContent = `Humidity: ${forecast.humidity} %`; 
+
+            cardBody.append(temperature, humidity); 
+
+            card.append(header, cardBody); 
+
+            $('.forecast-col').append(card); 
+        }); 
        
     }); 
 }
