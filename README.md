@@ -10,3 +10,8 @@ Developers are often tasked with retrieving data from another application's API 
 * Limit forecast to 7 days instead of 8 days 
     * Experiment with formatting for improved UX with additional CSS formatting 
 * Allow user to click enter to submit city 
+
+## The Current Design 
+
+![GitHub Logo](/weather.png)
+Format: ![image of weather design](url)
